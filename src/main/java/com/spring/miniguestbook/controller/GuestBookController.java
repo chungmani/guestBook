@@ -41,4 +41,12 @@ public class GuestBookController {
     public ResponseEntity<UpdateGuestBookResponse> update(@PathVariable Long guestId, @RequestBody UpdateGuestBookRequest request) {
         return ResponseEntity.status(HttpStatus.OK).body(guestBookService.update(guestId, request));
     }
+
+    // 삭제
+    @DeleteMapping("{guestId}")
+    public ResponseEntity<Void> delete(@PathVariable Long guestId) {
+        guestBookService.delete(guestId);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+
+    }
 }

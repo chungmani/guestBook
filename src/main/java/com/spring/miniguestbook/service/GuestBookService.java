@@ -63,4 +63,16 @@ public class GuestBookService {
         guestBook.update(request.getName(), request.getMessage());
         return new UpdateGuestBookResponse(guestBook.getId(), guestBook.getName(), guestBook.getMessage(), guestBook.getCreatedAt(), guestBook.getModifiedAt());
     }
+
+    // 삭제
+    @Transactional
+    public void delete(Long guestId) {
+        boolean existence = guestBookRepository.existsById(guestId);
+
+        if (!existence) {
+            throw new IllegalArgumentException("없는 게스트입니다.");
+        }
+
+        guestBookRepository.delete(guestId);
+    }
 }
