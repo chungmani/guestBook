@@ -5,8 +5,10 @@ import com.spring.miniguestbook.entity.GuestBook;
 import com.spring.miniguestbook.repository.GuestBookRepository;
 import jakarta.persistence.Table;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,18 +48,14 @@ public class GuestBookService {
     // 단건 조회
     @Transactional(readOnly = true)
     public GetGuestBookResponse findOne(Long guestId) {
-        GuestBook guestBook = guestBookRepository.findById(guestId).orElseThrow(
-                () -> new IllegalStateException("없는 게스트북입니다.")
-        );
+        GuestBook guestBook = getOrThrow(guestId);
         return new GetGuestBookResponse(guestBook.getId(), guestBook.getName(), guestBook.getMessage(), guestBook.getCreatedAt(), guestBook.getModifiedAt());
     }
 
     // 수정
     @Transactional
     public UpdateGuestBookResponse update(Long guestId, UpdateGuestBookRequest request) {
-        GuestBook guestBook = guestBookRepository.findById(guestId).orElseThrow(
-                () -> new IllegalStateException("없는 게스트입니다.")
-        );
+        GuestBook guestBook = getOrThrow(guestId);
 
         // 더티 체킹 (엔티티의 업데이트 메서드로 값 변경)
         guestBook.update(request.getName(), request.getMessage());
@@ -67,12 +65,15 @@ public class GuestBookService {
     // 삭제
     @Transactional
     public void delete(Long guestId) {
-        boolean existence = guestBookRepository.existsById(guestId);
+        GuestBook guestBook = getOrThrow(guestId);
+        guestBookRepository.delete(guestBook);
+    }
 
-        if (!existence) {
-            throw new IllegalArgumentException("없는 게스트입니다.");
-        }
-
-        guestBookRepository.delete(guestId);
+    // 내부 공통 메서드 : guestId로 엔티티 찾고 없으면 404에러 던짐
+    // private이라 외부에서는 못 쓰고, 이 서비스 안에서 중복을 줄이는 용도
+    private GuestBook getOrThrow(Long guestId) {
+        return guestBookRepository.findById(guestId).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "방명록을 찾을 수 없어요" + guestId)
+        );
     }
 }
