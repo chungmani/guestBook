@@ -44,4 +44,13 @@ public class GuestBookService {
         }
         return dtos;
     }
+
+    // 단건 조회
+    @Transactional(readOnly = true)
+    public GetGuestBookResponse findOne(Long guestId) {
+        GuestBook guestBook = guestBookRepository.findById(guestId).orElseThrow(
+                () -> new IllegalStateException("없는 게스트북입니다.")
+        );
+        return new GetGuestBookResponse(guestBook.getId(), guestBook.getName(), guestBook.getMessage(), guestBook.getCreatedAt(), guestBook.getModifiedAt());
+    }
 }

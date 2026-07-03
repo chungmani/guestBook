@@ -32,5 +32,10 @@ public class GuestBookController {
         return ResponseEntity.status(HttpStatus.OK).body(guestBookService.findAll());
     }
 
+    // 단건 조회
+    @GetMapping("/{guestId}")
+    public ResponseEntity<GetGuestBookResponse> getOne(@PathVariable Long guestId) {
+        return ResponseEntity.status(HttpStatus.OK).body(guestBookService.findOne(guestId));
+    }
 
 }
