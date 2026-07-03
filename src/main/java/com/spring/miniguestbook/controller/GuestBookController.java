@@ -1,8 +1,6 @@
 package com.spring.miniguestbook.controller;
 
-import com.spring.miniguestbook.dto.CreateGuestbookRequest;
-import com.spring.miniguestbook.dto.CreateGuestbookResponse;
-import com.spring.miniguestbook.dto.GetGuestBookResponse;
+import com.spring.miniguestbook.dto.*;
 import com.spring.miniguestbook.service.GuestBookService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -38,4 +36,9 @@ public class GuestBookController {
         return ResponseEntity.status(HttpStatus.OK).body(guestBookService.findOne(guestId));
     }
 
+    // 수정
+    @PutMapping("/{guestId}")
+    public ResponseEntity<UpdateGuestBookResponse> update(@PathVariable Long guestId, @RequestBody UpdateGuestBookRequest request) {
+        return ResponseEntity.status(HttpStatus.OK).body(guestBookService.update(guestId, request));
+    }
 }

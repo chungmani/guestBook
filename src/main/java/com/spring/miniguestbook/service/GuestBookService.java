@@ -1,8 +1,6 @@
 package com.spring.miniguestbook.service;
 
-import com.spring.miniguestbook.dto.CreateGuestbookRequest;
-import com.spring.miniguestbook.dto.CreateGuestbookResponse;
-import com.spring.miniguestbook.dto.GetGuestBookResponse;
+import com.spring.miniguestbook.dto.*;
 import com.spring.miniguestbook.entity.GuestBook;
 import com.spring.miniguestbook.repository.GuestBookRepository;
 import jakarta.persistence.Table;
@@ -52,5 +50,17 @@ public class GuestBookService {
                 () -> new IllegalStateException("없는 게스트북입니다.")
         );
         return new GetGuestBookResponse(guestBook.getId(), guestBook.getName(), guestBook.getMessage(), guestBook.getCreatedAt(), guestBook.getModifiedAt());
+    }
+
+    // 수정
+    @Transactional
+    public UpdateGuestBookResponse update(Long guestId, UpdateGuestBookRequest request) {
+        GuestBook guestBook = guestBookRepository.findById(guestId).orElseThrow(
+                () -> new IllegalStateException("없는 게스트입니다.")
+        );
+
+        // 더티 체킹 (엔티티의 업데이트 메서드로 값 변경)
+        guestBook.update(request.getName(), request.getMessage());
+        return new UpdateGuestBookResponse(guestBook.getId(), guestBook.getName(), guestBook.getMessage(), guestBook.getCreatedAt(), guestBook.getModifiedAt());
     }
 }
